@@ -6,5 +6,8 @@ router.get('/', (req, res) => {
   Record.find()
     .lean()
     .then(records => res.redirect('/records'))
+    .catch(error => console.log(error))
 })
+
+module.exports = router
 
