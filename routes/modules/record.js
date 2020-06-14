@@ -10,7 +10,6 @@ router.get('/', (req, res) => {
     .lean()
     .then(records => res.render('index', { records }))
     .catch(error => console.log(error))
-
 })
 
 // 取得建立紀錄的頁面
