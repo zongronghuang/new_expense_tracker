@@ -14,7 +14,7 @@ app.set('view engine', 'hbs')
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 
-// app.use(routes)
+app.use(routes)
 
 app.listen(PORT, (req, res) => {
   console.log(`Server up and running at http://localhost:${PORT}`)

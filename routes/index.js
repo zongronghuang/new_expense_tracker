@@ -5,9 +5,10 @@ const record = require('./modules/record.js')
 const user = require('./modules/user.js')
 const auth = require('./modules/auth.js')
 
-router.use('/users', user)
-router.use('/records', record)
-router.use('/auth', auth)
+
 router.use('/', home)
+router.use('/records', record)
+// router.use('/users', user)
+// router.use('/auth', auth)
 
 module.exports = router
