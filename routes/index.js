@@ -9,7 +9,7 @@ const { authenticator } = require('../middleware/auth.js')
 
 router.use('/records', authenticator, record)
 router.use('/users', user)
-router.use('/auth', auth)
+router.use('auth', auth)
 router.use('/', authenticator, home)
 
 

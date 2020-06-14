@@ -12,3 +12,5 @@ router.get('/facebook/callback',
     failureRedirect: '/users/login'
   })
 )
+
+module.exports = router
