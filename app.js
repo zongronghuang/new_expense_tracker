@@ -21,7 +21,7 @@ app.set('view engine', 'hbs')
 app.use(session({
   secret: 'mySecretKey',
   resave: false,
-  saveUnitialized: true
+  saveUninitialized: true
 }))
 
 app.use(express.static('public'))
