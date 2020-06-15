@@ -5,6 +5,50 @@ const Record = require('../../models/record.js')
 // 顯示所有紀錄
 router.get('/', (req, res) => {
   const userId = req.user._id
+  const queriedCategory = req.query.category || 'all'
+  const time = new Date()
+  const queriedMonth = req.query.month || time.toISOString().slice(0, 7)
+
+  if (queriedCategory === 'all') {
+    let total = 0
+    let subtotal = 0
+
+    Record.find({ userId, date: { $regex: queriedMonth } })
+      .lean()
+      .then(records => {
+        // 計算金額
+        records.forEach(record => total += record.amount)
+        subtotal = total
+
+        // 加入種類
+        return records.map(record => {
+          const category = record.category
+          record[category] = true
+        })
+      })
+      .then(records => res.render('index', {
+        records,
+        total,
+        subtotal,
+        queriedMonth,
+        all: true,
+        percentage: () => {
+          if (!total) {
+            return '0'
+          } else {
+            return Math.round((subtotal * 100) / total)
+          }
+        }
+      }
+      ))
+      .catch(error => console.log(error))
+  }
+
+  if (queriedCategory !== 'all') {
+    let total = 0
+    let subtotal = 0
+
+  }
 
   Record.find({ userId })
     .lean()
@@ -19,13 +63,16 @@ router.get('/new', (req, res) => {
 
 // 建立新紀錄
 router.post('/', (req, res) => {
-  Record.create({
-    name: req.body.name,
-    category: req.body.category,
-    date: req.body.date,
-    amount: req.body.amount,
-    retailer: req.body.retailer,
-    userId: req.user._id
+  const userId = req.user._id
+  const { name, category, date, amount, retailer } = req.body
+
+  return Record.create({
+    name: name,
+    category: category,
+    date: date,
+    amount: amount,
+    retailer: retailer,
+    userId
   })
     .then(() => res.redirect('/'))
     .catch(error => console.log(error))

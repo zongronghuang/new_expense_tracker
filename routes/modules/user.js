@@ -4,13 +4,13 @@ const User = require('../../models/user.js')
 const passport = require('passport')
 const bcrypt = require('bcryptjs')
 
-// 取得註冊頁面
+// 取得登入頁面
 router.get('/login', (req, res) => {
   res.render('login')
 })
 
-// 進行註冊檢查
-router.post('login', (req, res, next) => {
+// 進行登入檢查
+router.post('/login', (req, res, next) => {
   if (!req.body.email || !req.body.password) req.flash('warning_msg', '需先登入才能使用')
   next()
 }, passport.authenticate('local', {
