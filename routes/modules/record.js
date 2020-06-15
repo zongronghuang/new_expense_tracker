@@ -9,73 +9,86 @@ router.get('/', (req, res) => {
   const time = new Date()
   const queriedMonth = req.query.month || time.toISOString().slice(0, 7)
 
+  let subtotal = 0
+  console.log('res1', res.locals.total)
+  Record.find({ userId, date: { $regex: queriedMonth } })
+    .lean()
 
-  if (queriedCategory === 'all') {
-    let subtotal = 0
-    console.log('res1', res.locals.total)
-    Record.find({ userId, date: { $regex: queriedMonth } })
-      .lean()
-      .then(records => {
-        // 計算金額
-        records.forEach(record => res.locals.total += record.amount)
+    // 計算 total
+    .then(records => {
+      records.forEach(record => res.locals.total += record.amount)
+      return records
+    })
+
+    // 回傳符合類別的資料，並計算 subtotal
+    .then(records => {
+      if (queriedCategory === 'all') {
         subtotal = res.locals.total
-        console.log('res2', res.locals.total)
-        // 加入種類
-        return records.map(record => {
-          const category = record.category
-          record[category] = true
-          return record
-        })
+        return records
+      } else {
+        const classifiedRecords = records.filter(record => record.category === queriedCategory)
 
-      })
-      .then(records => res.render('index', {
-        records,
-        total: res.locals.total,
-        subtotal,
-        queriedMonth,
-        all: true,
-        percentage: () => {
-          if (!res.locals.total) {
-            return '0'
-          } else {
-            return Math.round((subtotal * 100) / res.locals.total)
-          }
+        classifiedRecords.forEach(record => subtotal += record.amount)
+
+        return classifiedRecords
+      }
+    })
+
+    // 回傳處理好的資料到頁面
+    .then(records => res.render('index', {
+      records,
+      total: res.locals.total,
+      subtotal,
+      queriedMonth,
+      queriedCategory: () => {
+        if (queriedCategory === 'all') {
+          return this.all = true
+        } else {
+          return this[queriedCategory] = true
+        }
+      },
+      percentage: () => {
+        if (!res.locals.total) {
+          return '0'
+        } else {
+          return Math.round((subtotal * 100) / res.locals.total)
         }
       }
-      ))
-      .catch(error => console.log(error))
-  }
+    }
+    ))
+    .catch(error => console.log(error))
 
-  if (queriedCategory !== 'all') {
-    let subtotal = 0
-    console.log('res3', res.locals.total)
-    Record.find({ userId, category: queriedCategory, date: { $regex: queriedMonth } })
-      .lean()
-      .then(records => records.map(record => {
-        const category = record.category
-        record[category] = true
-        return record
-      }))
-      .then(records => {
-        records.forEach(record => subtotal += record.amount)
-        return records
-      })
-      .then(records => res.render('index', {
-        records,
-        total: res.locals.total,
-        subtotal,
-        queriedMonth,
-        [queriedCategory]: true,
-        percentage: () => {
-          if (!res.locals.total) {
-            return '0'
-          } else {
-            return Math.round((subtotal * 100) / res.locals.total)
-          }
-        }
-      }))
-      .catch(error => console.log(error))
-  }
+
+  // if (queriedCategory !== 'all') {
+  //   let subtotal = 0
+  //   console.log('res3', res.locals.total)
+  //   Record.find({ userId, category: queriedCategory, date: { $regex: queriedMonth } })
+  //     .lean()
+  //     .then(records => records.map(record => {
+  //       const category = record.category
+  //       record[category] = true
+  //       return record
+  //     }))
+  //     .then(records => {
+  //       records.forEach(record => subtotal += record.amount)
+  //       return records
+  //     })
+  //     .then(records => res.render('index', {
+  //       records,
+  //       total: res.locals.total,
+  //       subtotal,
+  //       queriedMonth,
+  //       [queriedCategory]: true,
+  //       percentage: () => {
+  //         if (!res.locals.total) {
+  //           return '0'
+  //         } else {
+  //           return Math.round((subtotal * 100) / res.locals.total)
+  //         }
+  //       }
+  //     }))
+  //     .catch(error => console.log(error))
+  // }
 
 })
 
