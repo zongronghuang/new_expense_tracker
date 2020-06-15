@@ -9,34 +9,36 @@ router.get('/', (req, res) => {
   const time = new Date()
   const queriedMonth = req.query.month || time.toISOString().slice(0, 7)
 
-  if (queriedCategory === 'all') {
-    let total = 0
-    let subtotal = 0
 
+  if (queriedCategory === 'all') {
+    let subtotal = 0
+    console.log('res1', res.locals.total)
     Record.find({ userId, date: { $regex: queriedMonth } })
       .lean()
       .then(records => {
         // 計算金額
-        records.forEach(record => total += record.amount)
-        subtotal = total
-
+        records.forEach(record => res.locals.total += record.amount)
+        subtotal = res.locals.total
+        console.log('res2', res.locals.total)
         // 加入種類
         return records.map(record => {
           const category = record.category
           record[category] = true
+          return record
         })
+
       })
       .then(records => res.render('index', {
         records,
-        total,
+        total: res.locals.total,
         subtotal,
         queriedMonth,
         all: true,
         percentage: () => {
-          if (!total) {
+          if (!res.locals.total) {
             return '0'
           } else {
-            return Math.round((subtotal * 100) / total)
+            return Math.round((subtotal * 100) / res.locals.total)
           }
         }
       }
@@ -45,15 +47,36 @@ router.get('/', (req, res) => {
   }
 
   if (queriedCategory !== 'all') {
-    let total = 0
     let subtotal = 0
-
+    console.log('res3', res.locals.total)
+    Record.find({ userId, category: queriedCategory, date: { $regex: queriedMonth } })
+      .lean()
+      .then(records => records.map(record => {
+        const category = record.category
+        record[category] = true
+        return record
+      }))
+      .then(records => {
+        records.forEach(record => subtotal += record.amount)
+        return records
+      })
+      .then(records => res.render('index', {
+        records,
+        total: res.locals.total,
+        subtotal,
+        queriedMonth,
+        [queriedCategory]: true,
+        percentage: () => {
+          if (!res.locals.total) {
+            return '0'
+          } else {
+            return Math.round((subtotal * 100) / res.locals.total)
+          }
+        }
+      }))
+      .catch(error => console.log(error))
   }
 
-  Record.find({ userId })
-    .lean()
-    .then(records => res.render('index', { records }))
-    .catch(error => console.log(error))
 })
 
 // 取得建立紀錄的頁面
