@@ -12,6 +12,7 @@ router.get('/login', (req, res) => {
 // 進行登入檢查
 router.post('/login', (req, res, next) => {
   if (!req.body.email || !req.body.password) req.flash('warning_msg', '需先登入才能使用')
+
   next()
 }, passport.authenticate('local', {
   successRedirect: '/',

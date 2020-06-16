@@ -6,6 +6,8 @@ const session = require('express-session')
 const flash = require('connect-flash')
 
 const routes = require('./routes')
+
+// 載入 passport
 const usePassport = require('./config/passport.js')
 
 // 使用 mongoose 與 mongoDB 連線
@@ -25,14 +27,11 @@ app.use(session({
   saveUninitialized: true
 }))
 
-// 載入 passport
-
-
-
 app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 
+// 執行 passport
 usePassport(app)
 
 app.use(flash())
