@@ -8,27 +8,30 @@ router.get('/', (req, res) => {
   const queriedCategory = req.query.category || 'all'
   const time = new Date()
   const queriedMonth = req.query.month || time.toISOString().slice(0, 7)
-
+  let total = 0
   let subtotal = 0
-  console.log('res1', res.locals.total)
+
   Record.find({ userId, date: { $regex: queriedMonth } })
     .lean()
 
     // 計算 total
     .then(records => {
-      records.forEach(record => res.locals.total += record.amount)
+      records.forEach(record => total += record.amount)
       return records
     })
 
     // 回傳符合類別的資料，並計算 subtotal
     .then(records => {
       if (queriedCategory === 'all') {
-        subtotal = res.locals.total
+        subtotal = total
+        records.map(record => record.all = true)
+
         return records
       } else {
         const classifiedRecords = records.filter(record => record.category === queriedCategory)
 
         classifiedRecords.forEach(record => subtotal += record.amount)
+        classifiedRecords.map(record => record[queriedCategory] = true)
 
         return classifiedRecords
       }
@@ -37,59 +40,20 @@ router.get('/', (req, res) => {
     // 回傳處理好的資料到頁面
     .then(records => res.render('index', {
       records,
-      total: res.locals.total,
+      total,
       subtotal,
       queriedMonth,
-      queriedCategory: () => {
-        if (queriedCategory === 'all') {
-          return this.all = true
-        } else {
-          return this[queriedCategory] = true
-        }
-      },
+      [queriedCategory]: true,
       percentage: () => {
-        if (!res.locals.total) {
+        if (!total) {
           return '0'
         } else {
-          return Math.round((subtotal * 100) / res.locals.total)
+          return Math.round((subtotal * 100) / total)
         }
       }
     }
     ))
     .catch(error => console.log(error))
-
-
-  // if (queriedCategory !== 'all') {
-  //   let subtotal = 0
-  //   console.log('res3', res.locals.total)
-  //   Record.find({ userId, category: queriedCategory, date: { $regex: queriedMonth } })
-  //     .lean()
-  //     .then(records => records.map(record => {
-  //       const category = record.category
-  //       record[category] = true
-  //       return record
-  //     }))
-  //     .then(records => {
-  //       records.forEach(record => subtotal += record.amount)
-  //       return records
-  //     })
-  //     .then(records => res.render('index', {
-  //       records,
-  //       total: res.locals.total,
-  //       subtotal,
-  //       queriedMonth,
-  //       [queriedCategory]: true,
-  //       percentage: () => {
-  //         if (!res.locals.total) {
-  //           return '0'
-  //         } else {
-  //           return Math.round((subtotal * 100) / res.locals.total)
-  //         }
-  //       }
-  //     }))
-  //     .catch(error => console.log(error))
-  // }
-
 })
 
 // 取得建立紀錄的頁面
@@ -134,6 +98,7 @@ router.put('/:id', (req, res) => {
   const userId = req.user._id
   const _id = req.params.id
   const { name, date, category, amount, retailer } = req.body
+  let queriedMonth = ''
 
   return Record.findOne({ _id, userId })
     .then(record => {
@@ -143,9 +108,13 @@ router.put('/:id', (req, res) => {
       record.amount = amount
       record.retailer = retailer
 
+      queriedMonth = record.date.slice(0, 7)
+
       return record.save()
     })
-    .then(() => res.redirect('/records'))
+
+    // 回到該月份的全部類別清單
+    .then(() => res.redirect(`/records?category=all&month=${queriedMonth}`))
     .catch(error => console.log(error))
 })
 

@@ -36,23 +36,23 @@
   {{#each records}}
     <li class="list-group-item mx-auto w-75 d-flex justify-content-between align-items-center">
       <div class="flex-grow-2">
-        {{#if home}}
+        {{#if this.home}}
           <i class="fas fa-home"></i>
         {{/if}}
 
-        {{#if travel}}
+        {{#if this.travel}}
           <i class="fas fa-shuttle-van"></i>
         {{/if}}
 
-        {{#if fun}}
+        {{#if this.fun}}
           <i class="fas fa-grin-beam"></i>
         {{/if}}
 
-        {{#if food}}
+        {{#if this.food}}
           <i class="fas fa-utensils"></i>
         {{/if}}
 
-        {{#if misc}}
+        {{#if this.misc}}
           <i class="fas fa-pen"></i>
         {{/if}}
 
