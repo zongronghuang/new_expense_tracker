@@ -13,15 +13,11 @@ router.get('/', (req, res) => {
 
   Record.find({ userId, date: { $regex: queriedMonth } })
     .lean()
-
-    // 計算 total
-    .then(records => {
+    .then(records => {  // 計算該月份的消費總額 total
       records.forEach(record => total += record.amount)
       return records
     })
-
-    // 回傳符合類別的資料，並計算 subtotal
-    .then(records => {
+    .then(records => {  // 篩選符合種類的資料 + 計算 subtotal + 回傳篩選過的紀錄
       if (queriedCategory === 'all') {
         subtotal = total
         records.map(record => record.all = true)
@@ -36,9 +32,7 @@ router.get('/', (req, res) => {
         return classifiedRecords
       }
     })
-
-    // 回傳處理好的資料到頁面
-    .then(records => res.render('index', {
+    .then(records => res.render('index', {  // 回傳處理好的紀錄到頁面
       records,
       total,
       subtotal,
