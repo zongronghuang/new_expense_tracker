@@ -15,7 +15,6 @@ module.exports = app => {
           return done(null, false, { message: '電子郵件未註冊' })
         }
 
-
         return bcrypt.compare(password, user.password)
           .then(isMatched => {
             if (!isMatched) {
