@@ -22,11 +22,12 @@ router.get('/', (req, res) => {
         subtotal = total
         records.map(record => record.all = true)
 
-        return records
+        return updatedRecords
       } else {
         const classifiedRecords = records.filter(record => record.category === queriedCategory)
 
         classifiedRecords.forEach(record => subtotal += record.amount)
+
         classifiedRecords.map(record => record[queriedCategory] = true)
 
         return classifiedRecords
