@@ -1,7 +1,7 @@
 module.exports = {
   authenticator: (req, res, next) => {
 
-    console.log('req session', req.session)
+    // console.log('req session', req.session)
 
     if (req.isAuthenticated()) {
       return next()
