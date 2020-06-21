@@ -20,7 +20,10 @@ router.get('/', (req, res) => {
     .then(records => {  // 篩選符合種類的資料 + 計算 subtotal + 回傳篩選過的紀錄
       if (queriedCategory === 'all') {
         subtotal = total
-        records.map(record => record.all = true)
+        const updatedRecords = records.map(record => {
+          record[record.category] = true
+          return record
+        })
 
         return updatedRecords
       } else {
@@ -28,9 +31,12 @@ router.get('/', (req, res) => {
 
         classifiedRecords.forEach(record => subtotal += record.amount)
 
-        classifiedRecords.map(record => record[queriedCategory] = true)
+        const updatedClassifiedRecords = classifiedRecords.map(record => {
+          record[record.category] = true
+          return record
+        })
 
-        return classifiedRecords
+        return updatedClassifiedRecords
       }
     })
     .then(records => res.render('index', {  // 回傳處理好的紀錄到頁面
