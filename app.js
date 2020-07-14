@@ -5,6 +5,10 @@ const methodOverride = require('method-override')
 const session = require('express-session')
 const flash = require('connect-flash')
 
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
+
 const routes = require('./routes')
 
 // 載入 passport
@@ -22,7 +26,7 @@ app.set('view engine', 'hbs')
 
 // 設定 session 
 app.use(session({
-  secret: 'mySecretKey',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true
 }))

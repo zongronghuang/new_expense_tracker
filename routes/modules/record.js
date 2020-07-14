@@ -39,22 +39,27 @@ router.get('/', (req, res) => {
         return updatedClassifiedRecords
       }
     })
-    .then(records => res.render('index', {  // 回傳處理好的紀錄到頁面
-      records,
-      total,
-      subtotal,
-      queriedMonth,
-      [queriedCategory]: true,
-      modal: `${userId}${Math.floor(Math.random() * 1000)}`,
-      percentage: () => {
-        if (!total) {
-          return '0'
-        } else {
-          return Math.round((subtotal * 100) / total)
-        }
-      }
-    }
-    ))
+    .then(records => { // 回傳處理好的紀錄到頁面
+
+      // 加入 Bootstrap modal 用的 modal target 和 modal ID
+      // id 必須以字母開頭，避免相容性問題
+      records.forEach(record => {
+        record.modalTarget = '#r' + record._id
+        record.modalId = 'r' + record._id
+      })
+
+      const percentage = total ? Math.round((subtotal * 100) / total) : '0'
+
+      res.render('index', {
+        records,
+        total,
+        subtotal,
+        queriedMonth,
+        [queriedCategory]: true,
+        percentage
+      })
+
+    })
     .catch(error => console.log(error))
 })
 

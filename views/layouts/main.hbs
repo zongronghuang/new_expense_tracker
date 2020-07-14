@@ -17,20 +17,20 @@
       <i class="fas fa-calculator"></i>
       家庭記帳本</a>
 
-    <div class="mx-auto">
-      <form action="/records/new" method="GET" class="mx-auto">
-        <button type="submit" class="btn btn-primary">新增支出</button>
-      </form>
-    </div>
+    {{#if isAuthenticated}}
+      <div class="mx-auto">
+        <form action="/records/new" method="GET" class="mx-auto">
+          <button type="submit" class="btn btn-primary">新增支出</button>
+        </form>
+      </div>
 
-    <div class="float-right d-flex">
+      <div class="float-right d-flex">
 
-      {{#if isAuthenticated}}
         <span class="font-weight-bold mt-2">{{user.name}}，你好!</span>
         <form class="ml-3" action="/users/logout" method="GET">
           <button class="btn btn-danger" type="submit">登出</button>
         </form>
-      {{/if}}
+    {{/if}}
 
     </div>
   </nav>
