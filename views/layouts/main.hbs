@@ -16,6 +16,13 @@
     <a class="navbar-brand" href="/">
       <i class="fas fa-calculator"></i>
       家庭記帳本</a>
+
+    <div class="mx-auto">
+      <form action="/records/new" method="GET" class="mx-auto">
+        <button type="submit" class="btn btn-primary">新增支出</button>
+      </form>
+    </div>
+
     <div class="float-right d-flex">
 
       {{#if isAuthenticated}}
