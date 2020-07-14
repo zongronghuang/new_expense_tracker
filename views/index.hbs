@@ -38,82 +38,83 @@
 {{! 清單}}
 <ul class="list-group w-75 mx-auto mb-5">
   {{#each records}}
-    <li class="list-group-item mx-auto w-75 d-flex justify-content-between align-items-center">
-      <div class="flex-grow-2">
-        {{#if this.home}}
-          <i class="fas fa-home"></i>
-        {{/if}}
+    <li class="list-group-item mx-auto w-75">
+      <div class="container">
+        <div class="row">
+          <span class="col-1">
+            {{#if this.home}}
+              <i class="fas fa-home"></i>
+            {{/if}}
 
-        {{#if this.travel}}
-          <i class="fas fa-shuttle-van"></i>
-        {{/if}}
+            {{#if this.travel}}
+              <i class="fas fa-shuttle-van"></i>
+            {{/if}}
 
-        {{#if fun}}
-          <i class="fas fa-grin-beam"></i>
-        {{/if}}
+            {{#if this.fun}}
+              <i class="fas fa-grin-beam"></i>
+            {{/if}}
 
-        {{#if food}}
-          <i class="fas fa-utensils"></i>
-        {{/if}}
+            {{#if this.food}}
+              <i class="fas fa-utensils"></i>
+            {{/if}}
 
-        {{#if misc}}
-          <i class="fas fa-pen"></i>
-        {{/if}}
+            {{#if this.misc}}
+              <i class="fas fa-pen"></i>
+            {{/if}}
+          </span>
 
-        <span class="w-25 ml-3 text-center">{{this.name}}</span>
+          <span class="col text-left">{{this.name}}</span>
+
+          <small class="col text-center">{{this.date}}</small>
+
+          <span class="font-weight-bold col text-center">{{this.amount}}</span>
+
+          <span clas="col">
+            <a class="btn btn-info" href="/records/{{{this._id}}}/details">細節</a>
+            <a class="btn btn-primary " href="/records/{{{this._id}}}/edit">編輯</a>
+            <button class="btn btn-danger" data-toggle="modal" data-target="#{{../modal}}">刪除</button>
+          </span>
+        </div>
       </div>
 
-      <div class="flex-grow-1 text-center">
-        <small>{{this.date}}</small>
-      </div>
+      {{! deletion warning modal}}
+      <div class="modal fade" id="{{../modal}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header bg-primary">
+              <h5 class="modal-title" id="exampleModalCenterTitle">刪除紀錄</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
 
-      <div class="flex-grow-1 text-center">
-        <span class="font-weight-bold">{{this.amount}}</span>
-      </div>
+            <div class="modal-body">
+              <p>您確定要刪除此項消費紀錄嗎？</p>
+              <ul class="mx-auto ml-4">
+                <li class="mb-2"><span class="font-weight-bold">種類</span><span class="mr-2">:</span>{{this.category}}
+                </li>
+                <li class="mb-2"><span class="font-weight-bold">支出項目</span><span class="mr-2">:</span>{{this.name}}</li>
+                <li class="mb-2"><span class="font-weight-bold">消費日期</span><span class="mr-2">:</span>{{this.date}}</li>
+                <li class="mb-2"><span class="font-weight-bold">購買商家</span><span class="mr-2">:</span>{{this.retailer}}
+                </li>
+                <li class="mb-2"><span class="font-weight-bold">金額 (新臺幣)</span><span
+                    class="mr-2">:</span>{{this.amount}}
+                </li>
+              </ul>
+            </div>
 
-      <div class="d-flex">
-        <a class="btn btn-info" href="/records/{{{this._id}}}/details">細節</a>
-        <a class="btn btn-primary ml-3" href="/records/{{{this._id}}}/edit">編輯</a>
-        <button class="btn btn-danger ml-3" data-toggle="modal" data-target="#deletion-warning">刪除</button>
-      </div>
-    </li>
-
-    {{! deletion warning modal}}
-    <div class="modal fade" id="deletion-warning" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
-      aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalCenterTitle">刪除紀錄</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-
-          <div class="modal-body">
-            <p>您確定要刪除此項消費紀錄嗎？</p>
-            <ul class="mx-auto ml-4">
-              <li class="mb-2"><span class="font-weight-bold">種類</span><span class="mr-2">:</span>{{this.category}}
-              </li>
-              <li class="mb-2"><span class="font-weight-bold">支出項目</span><span class="mr-2">:</span>{{this.name}}</li>
-              <li class="mb-2"><span class="font-weight-bold">消費日期</span><span class="mr-2">:</span>{{this.date}}</li>
-              <li class="mb-2"><span class="font-weight-bold">購買商家</span><span class="mr-2">:</span>{{this.retailer}}
-              </li>
-              <li class="mb-2"><span class="font-weight-bold">金額 (新臺幣)</span><span class="mr-2">:</span>{{this.amount}}
-              </li>
-            </ul>
-          </div>
-
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-            <form action="/records/{{{this._id}}}/delete?_method=DELETE" method="POST">
-              <button type="submit" class="btn btn-primary">刪除紀錄</button>
-            </form>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+              <form action="/records/{{{this._id}}}/delete?_method=DELETE" method="POST">
+                <button type="submit" class="btn btn-danger">刪除紀錄</button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
+    </li>
 
   {{/each}}
 

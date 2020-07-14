@@ -45,6 +45,7 @@ router.get('/', (req, res) => {
       subtotal,
       queriedMonth,
       [queriedCategory]: true,
+      modal: `${userId}${Math.floor(Math.random() * 1000)}`,
       percentage: () => {
         if (!total) {
           return '0'
@@ -73,7 +74,7 @@ router.post('/', (req, res) => {
     date: date,
     amount: amount,
     retailer: retailer,
-    userId
+    userId,
   })
     .then(() => res.redirect('/'))
     .catch(error => console.log(error))
