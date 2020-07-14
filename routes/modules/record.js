@@ -79,6 +79,20 @@ router.post('/', (req, res) => {
     .catch(error => console.log(error))
 })
 
+// 顯示紀錄詳細資訊
+router.get('/:id/details', (req, res) => {
+  const userId = req.user._id
+  const _id = req.params.id
+
+  Record.findOne({ _id, userId })
+    .lean()
+    .then(record => {
+      record[record.category] = true
+      res.render('update', { record, details: true })
+    })
+    .catch(error => console.log(error))
+})
+
 // 取得編輯紀錄的頁面
 router.get('/:id/edit', (req, res) => {
   const userId = req.user._id
